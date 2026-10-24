@@ -151,6 +151,7 @@ function PlanColumn({ option, columnClass, recommendation, chosen, onPick }: Pla
         <button
           type="button"
           aria-disabled={decided ? true : undefined}
+          aria-label={`${isChosen ? "Picked" : "Pick this plan"}: ${option.name}`}
           onClick={() => onPick(option)}
           className={cn(
             "inline-flex h-8 items-center gap-1.5 rounded-md border px-3 text-sm font-medium whitespace-nowrap transition-[background-color,color,scale] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring motion-reduce:transition-none",
@@ -179,7 +180,6 @@ function PlanColumn({ option, columnClass, recommendation, chosen, onPick }: Pla
           ) : (
             "Pick this plan"
           )}
-          <span className="sr-only">: {option.name}</span>
         </button>
       </div>
     </div>
