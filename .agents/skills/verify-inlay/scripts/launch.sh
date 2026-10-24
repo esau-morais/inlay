@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-# Start the Inlay gallery dev server in its own process group and wait until it renders.
-# Usage: launch.sh [port]
 set -euo pipefail
 
 port="${1:-4310}"

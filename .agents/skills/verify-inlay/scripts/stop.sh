@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-# Stop the gallery that launch.sh started on <port>. Leaves .proof/ untouched.
-# Usage: stop.sh [port]
 set -euo pipefail
 
 port="${1:-4310}"

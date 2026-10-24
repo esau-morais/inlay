@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-# Read-only check that the gallery on <port> is the one this worktree started and that it renders.
-# Usage: doctor.sh [port]
 set -uo pipefail
 
 port="${1:-4310}"
