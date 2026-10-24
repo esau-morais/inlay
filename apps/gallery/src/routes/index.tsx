@@ -62,12 +62,9 @@ function Home() {
       </section>
 
       <section aria-labelledby="blocks" className="flex flex-col gap-6">
-        <div className="flex items-baseline justify-between gap-4">
-          <h2 id="blocks" className="text-lg font-semibold">
-            The blocks
-          </h2>
-          <p className="text-sm text-muted-foreground tabular-nums">{galleryBlocks.length} of 5</p>
-        </div>
+        <h2 id="blocks" className="text-lg font-semibold">
+          The blocks
+        </h2>
         <ol className="flex flex-col border-t">
           {galleryBlocks.map((block, index) => (
             <li key={block.name} className="border-b">
