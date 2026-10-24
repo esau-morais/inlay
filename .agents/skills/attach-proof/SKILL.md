@@ -46,7 +46,7 @@ agent-browser close
 
 Open each PNG with the `Read` tool before you attach it. For a recording, pull one frame with `ffmpeg -ss 3 -i <file> -frames:v 1 /tmp/frame.png` and open that. Throw away any capture that shows a spinner, an error page, a blank frame, or a page other than the one you meant.
 
-TODO: once the gallery runs, the next thread creates the `verify-inlay` skill with `create-verification-skill`. After that, launch and drive the app with `verify-inlay` and use this skill only for the capture and attach steps.
+Launch the gallery and drive it with the `verify-inlay` skill. Its feature files name what each capture must show. Use this skill for the capture and attach steps.
 
 ## 2. Attach
 
@@ -59,9 +59,18 @@ The script does the following:
 1. Pushes the files to the orphan `proof-assets` branch under `pr-<number>/<timestamp>/`. It writes the commit with git plumbing and a temporary index, so your checkout and working tree stay untouched.
 2. Builds `raw.githubusercontent.com` URLs pinned to that commit. A later upload never changes what an older PR shows.
 3. Converts each `.webm` or `.mp4` to a GIF with `ffmpeg` and embeds the GIF, with a link to the original. GitHub does not play a linked video inline. Without `ffmpeg`, the PR gets only the link.
-4. Replaces the text between `<!-- proof:start -->` and `<!-- proof:end -->` in the PR body, or appends the section when it is missing.
+4. Groups the files into collapsed `<details>` sections when you pass `--section` or more than six files.
+5. Replaces the text between `<!-- proof:start -->` and `<!-- proof:end -->` in the PR body, or appends the section when it is missing.
 
 Each run replaces the whole section. Pass every file the PR needs in one call.
+
+When the proof is long, group it. Every file after `--section "<title>"` belongs to that section, so give each screen or interaction its own section. With any section, or with more than six files, each section renders as a collapsed `<details>` disclosure. The summary shows the title and the file count, so the PR body stays short.
+
+```sh
+node scripts/attach-proof.ts --pr <number> --note "<what to look at>" \
+	--section "Interactions" .proof/<subject>-<action>.webm \
+	--section "<screen>" .proof/<screen>-1440-light.png .proof/<screen>-390-light.png
+```
 
 The script needs `gh` logged in with push access to the repo, and an open PR. `--pr` defaults to the PR for the current branch.
 

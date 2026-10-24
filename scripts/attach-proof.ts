@@ -16,11 +16,18 @@ type Asset =
 
 type Uploaded = { asset: Asset; url: string; previewUrl: string | null };
 
-const usage = `Usage: node scripts/attach-proof.ts [--pr <number>] [--note <text>] <file>...
+type Section = { title: string | null; files: string[] };
+
+const FLAT_LIMIT = 6;
+
+const usage = `Usage: node scripts/attach-proof.ts [--pr <number>] [--note <text>] [--section <title>] <file>... [--section <title> <file>...]
 
 Uploads screenshots and recordings to the ${BRANCH} branch and writes them
 into the Proof section of the pull request body. Each run replaces the
-section, so pass every file the PR needs in one call.`;
+section, so pass every file the PR needs in one call.
+
+Files after --section <title> belong to that section. With sections, or with
+more than ${FLAT_LIMIT} files, each section renders as a collapsed disclosure.`;
 
 function run(command: string, args: readonly string[], env?: NodeJS.ProcessEnv): string {
   return execFileSync(command, args, {
@@ -138,23 +145,38 @@ function pushAssets(
   throw new Error(`could not push to ${BRANCH} after 3 attempts`);
 }
 
-function renderSection(uploads: readonly Uploaded[], note: string | undefined): string {
+function renderAsset({ asset, url, previewUrl }: Uploaded): string[] {
+  if (asset.kind === "image") {
+    return [`**${asset.name}**`, "", `![${asset.name}](${url})`, ""];
+  }
+  const preview = previewUrl === null ? [] : [`![${asset.name}](${previewUrl})`, ""];
+  return [`**${asset.name}** ([recording](${url}))`, "", ...preview];
+}
+
+function renderSection(
+  groups: readonly { title: string | null; uploads: readonly Uploaded[] }[],
+  note: string | undefined,
+): string {
   const lines = [START, "## Proof", ""];
   if (note !== undefined && note !== "") {
     lines.push(note, "");
   }
-  for (const { asset, url, previewUrl } of uploads) {
-    switch (asset.kind) {
-      case "image":
-        lines.push(`**${asset.name}**`, "", `![${asset.name}](${url})`, "");
-        break;
-      case "video":
-        lines.push(`**${asset.name}** ([recording](${url}))`, "");
-        if (previewUrl !== null) {
-          lines.push(`![${asset.name}](${previewUrl})`, "");
-        }
-        break;
+  const total = groups.reduce((sum, group) => sum + group.uploads.length, 0);
+  const collapse = groups.some((group) => group.title !== null) || total > FLAT_LIMIT;
+  for (const { title, uploads } of groups) {
+    if (!collapse) {
+      lines.push(...uploads.flatMap(renderAsset));
+      continue;
     }
+    const count = `${uploads.length} ${uploads.length === 1 ? "file" : "files"}`;
+    lines.push(
+      "<details>",
+      `<summary><b>${title ?? "Captures"}</b> (${count})</summary>`,
+      "",
+      ...uploads.flatMap(renderAsset),
+      "</details>",
+      "",
+    );
   }
   lines.push("<sub>Uploaded with `scripts/attach-proof.ts`.</sub>", END);
   return lines.join("\n");
@@ -170,14 +192,24 @@ function replaceSection(body: string, section: string): string {
 }
 
 function main(): void {
-  const { values, positionals } = parseArgs({
+  const { values, positionals, tokens } = parseArgs({
     allowPositionals: true,
+    tokens: true,
     options: {
       pr: { type: "string" },
       note: { type: "string" },
+      section: { type: "string", multiple: true },
       help: { type: "boolean", short: "h" },
     },
   });
+  const sections: Section[] = [{ title: null, files: [] }];
+  for (const token of tokens) {
+    if (token.kind === "option" && token.name === "section") {
+      sections.push({ title: token.value ?? null, files: [] });
+    } else if (token.kind === "positional") {
+      sections.at(-1)?.files.push(token.value);
+    }
+  }
   if (values.help === true || positionals.length === 0) {
     console.info(usage);
     process.exit(values.help === true ? 0 : 1);
@@ -209,15 +241,27 @@ function main(): void {
       }
       return `https://raw.githubusercontent.com/${repo}/${commit}/${path}`;
     };
-    const uploads = assets.map((asset): Uploaded => ({
-      asset,
-      url: urlFor(asset.source),
-      previewUrl: asset.kind === "video" && asset.preview !== null ? urlFor(asset.preview) : null,
-    }));
+    const uploads = new Map(
+      assets.map((asset): [string, Uploaded] => [
+        asset.source,
+        {
+          asset,
+          url: urlFor(asset.source),
+          previewUrl:
+            asset.kind === "video" && asset.preview !== null ? urlFor(asset.preview) : null,
+        },
+      ]),
+    );
+    const groups = sections
+      .filter((section) => section.files.length > 0)
+      .map((section) => ({
+        title: section.title,
+        uploads: section.files.flatMap((file) => uploads.get(file) ?? []),
+      }));
 
     const body = run("gh", ["pr", "view", String(pr), "--json", "body", "--jq", ".body"]);
     const bodyFile = join(workDir, "body.md");
-    writeFileSync(bodyFile, replaceSection(body, renderSection(uploads, values.note)));
+    writeFileSync(bodyFile, replaceSection(body, renderSection(groups, values.note)));
     run("gh", ["pr", "edit", String(pr), "--body-file", bodyFile]);
 
     if (!canPreview && assets.some((asset) => asset.kind === "video")) {

@@ -18,7 +18,8 @@ Skills live in `.agents/skills/<name>/SKILL.md`. `.claude/skills` points at the 
 | Animation | `review-animations`, `fixing-motion-performance` |
 | Gallery pages | `fixing-metadata` |
 | The shadcn registry | `shadcn` |
-| Before review | `no-comments`, then `attach-proof` |
+| Running the gallery or checking that a block works | `verify-inlay` |
+| Before review | `verify-inlay`, `no-comments`, then `attach-proof` |
 | Long or unattended runs | `show-me-your-work` |
 | End of each milestone in docs/plan.md | `reflect`, to turn the session into skill edits |
 | Esaú corrects the same mistake twice | `correct` |
@@ -45,7 +46,7 @@ Every PR carries evidence in its body. What counts as evidence depends on what t
 | UI or behavior | Screenshots at desktop (1440 px) and phone (390 px) widths for every changed screen, and a short recording for every interaction. Capture with `agent-browser` (`~/.npm-global/bin/agent-browser`, see `agent-browser --help`) and attach with `scripts/attach-proof.ts`, following the `attach-proof` skill. |
 | Only docs, config, or CI | No screenshots or recordings. When the change describes or alters architecture or a flow, put a Mermaid diagram of it in the PR body. GitHub renders `mermaid` code blocks. Otherwise, say in one sentence how you checked the change. |
 
-TODO: Inlay has no verification skill yet because no app runs. When the gallery runs, the next thread creates `verify-inlay` with `create-verification-skill` and adds it to this section. Then it deletes the temporary `create-verification-skill` and `automate-me` skills, as SOURCES.md describes.
+Launch and drive the gallery with the `verify-inlay` skill. Its helpers start the dev server on a port you choose, check that the instance is yours, and stop it afterwards. Its feature map lists the recipe and the expected end state for each block. When a block, a sample, or a gallery route changes, update the map in the same PR, or run `maintain-verification-skill`.
 
 ## Rules and what enforces them
 

@@ -8,8 +8,9 @@
     "lint:selftest": "node scripts/lint-selftest.ts",
     "format": "oxfmt",
     "format:check": "oxfmt --check",
-    "typecheck": "tsc -p tsconfig.json",
-    "check": "pnpm lint && pnpm lint:selftest && pnpm format:check && pnpm typecheck"
+    "typecheck": "tsc -p tsconfig.json && pnpm -r typecheck",
+    "check": "pnpm lint && pnpm lint:selftest && pnpm format:check && pnpm typecheck && pnpm test",
+    "test": "pnpm -r test"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.4",
