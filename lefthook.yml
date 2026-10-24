@@ -1,0 +1,15 @@
+pre-commit:
+  parallel: true
+  jobs:
+    - name: lint
+      glob: "*.{js,mjs,cjs,jsx,ts,mts,cts,tsx}"
+      run: pnpm exec oxlint --no-error-on-unmatched-pattern {staged_files}
+    - name: format
+      glob: "*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,json,jsonc,yaml,yml,css}"
+      run: pnpm exec oxfmt --no-error-on-unmatched-pattern {staged_files}
+      stage_fixed: true
+
+commit-msg:
+  jobs:
+    - name: commitlint
+      run: pnpm exec commitlint --edit {1}
