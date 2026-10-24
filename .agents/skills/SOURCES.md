@@ -91,3 +91,11 @@ Notes on the UI skills:
 - `baseline-ui` says to use `motion/react` when JavaScript animation is needed. Every block dependency becomes a dependency of the app that installs it, so ask Esaú before a block adds one.
 - `shadcn` runs `npx shadcn@latest info --json` when it loads. Until a `components.json` exists, that command prints an error, and it always needs network access.
 - `improve-ui`, `create-design-md`, `component-canvas`, and `create-canvas` from ibelick were left out for v0. `create-design-md` is worth adding once the gallery has a visual language to document.
+
+## Inlay skills
+
+These skills are written for this repo and have no upstream. Edit them freely through a PR.
+
+| Skill | Why it is here |
+| --- | --- |
+| `attach-proof` | Captures screenshots and recordings with `agent-browser` and attaches them to a PR through `scripts/attach-proof.ts`. Drafted with `automate-me` from the setup brief, since this workspace had no earlier transcripts to mine. |
