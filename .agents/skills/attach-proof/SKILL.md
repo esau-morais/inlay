@@ -7,7 +7,7 @@ description: Capture screenshots and recordings with agent-browser and attach th
 
 Esaú reviews every PR that changes UI or behavior against evidence from the running app, not against the diff alone. This skill captures that evidence with `agent-browser` and puts it in the PR body with `scripts/attach-proof.ts`.
 
-A PR that only changes docs, config, or CI needs no proof. Say so in the PR body.
+A PR that only changes docs, config, or CI gets no screenshots or recordings, so skip this skill. When that change describes or alters architecture or a flow, put a Mermaid diagram of it in the PR body instead. AGENTS.md has the full rule.
 
 ## 1. Capture
 
