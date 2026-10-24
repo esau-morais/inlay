@@ -38,11 +38,12 @@ Skills live in `.agents/skills/<name>/SKILL.md`. `.claude/skills` points at the 
 
 ## Proof of work
 
-Every PR that changes UI or behavior carries evidence in its body. Follow the `attach-proof` skill.
+Every PR carries evidence in its body. What counts as evidence depends on what the PR changes.
 
-- Screenshots at desktop (1440 px) and phone (390 px) widths for every changed screen.
-- A short recording for every interaction.
-- Captured with `agent-browser` (`~/.npm-global/bin/agent-browser`, see `agent-browser --help`) and attached with `scripts/attach-proof.ts`.
+| The PR changes | Evidence |
+| --- | --- |
+| UI or behavior | Screenshots at desktop (1440 px) and phone (390 px) widths for every changed screen, and a short recording for every interaction. Capture with `agent-browser` (`~/.npm-global/bin/agent-browser`, see `agent-browser --help`) and attach with `scripts/attach-proof.ts`, following the `attach-proof` skill. |
+| Only docs, config, or CI | No screenshots or recordings. When the change describes or alters architecture or a flow, put a Mermaid diagram of it in the PR body. GitHub renders `mermaid` code blocks. Otherwise, say in one sentence how you checked the change. |
 
 TODO: Inlay has no verification skill yet because no app runs. When the gallery runs, the next thread creates `verify-inlay` with `create-verification-skill` and adds it to this section. Then it deletes the temporary `create-verification-skill` and `automate-me` skills, as SOURCES.md describes.
 
