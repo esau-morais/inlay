@@ -1,4 +1,4 @@
 {
   "$schema": "./node_modules/oxfmt/configuration_schema.json",
-  "ignorePatterns": [".agents/**", ".claude/**", "**/*.md", "pnpm-lock.yaml"]
+  "ignorePatterns": [".agents/**", ".claude/**", "**/*.md", "pnpm-lock.yaml", "**/routeTree.gen.ts"]
 }

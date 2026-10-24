@@ -15,13 +15,16 @@
     "node": true,
     "es2024": true
   },
-  "ignorePatterns": [".agents/**", ".claude/**", "tests/lint/fixtures/**"],
+  "ignorePatterns": [".agents/**", ".claude/**", "tests/lint/fixtures/**", "**/routeTree.gen.ts"],
   "rules": {
     "typescript/no-explicit-any": "error",
     "typescript/no-non-null-assertion": "error",
     "typescript/switch-exhaustiveness-check": [
       "error",
-      { "considerDefaultExhaustiveForUnions": false, "requireDefaultForNonUnion": true }
+      {
+        "considerDefaultExhaustiveForUnions": false,
+        "requireDefaultForNonUnion": true
+      }
     ],
     "typescript/no-floating-promises": "error",
     "typescript/no-misused-promises": "error",
@@ -37,6 +40,23 @@
     "react/no-array-index-key": "error",
     "react/button-has-type": "error",
     "react/react-in-jsx-scope": "off",
-    "jsx-a11y/anchor-ambiguous-text": "error"
-  }
+    "jsx-a11y/anchor-ambiguous-text": "error",
+    "import/default": "off",
+    "jsx-a11y/no-noninteractive-tabindex": [
+      "error",
+      {
+        "tags": ["section"],
+        "roles": ["tabpanel"],
+        "allowExpressionValues": true
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["**/*.test.ts"],
+      "rules": {
+        "typescript/no-floating-promises": "off"
+      }
+    }
+  ]
 }
