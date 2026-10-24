@@ -11,22 +11,25 @@ A PR that only changes docs, config, or CI needs no proof. Say so in the PR body
 
 ## 1. Capture
 
-Use a session named after the worktree, so you never drive another agent's browser. Save every capture in `.proof/`, which git ignores.
+Use a session named after the worktree, so you never drive another agent's browser. Save every capture in `.proof/`, which git ignores. Pass absolute paths. The agent-browser daemon resolves a relative path from its own directory and saves the file somewhere else.
 
 ```sh
 export AGENT_BROWSER_SESSION="$(agent-browser session id --scope worktree --prefix proof)"
 mkdir -p .proof
+P="$PWD/.proof"
 
 agent-browser set viewport 1440 900
 agent-browser open <url>
 agent-browser wait --text "<text that only renders when the change works>"
-agent-browser screenshot .proof/<subject>-desktop.png
+agent-browser screenshot "$P/<subject>-desktop.png"
 
 agent-browser set viewport 390 844
 agent-browser reload
 agent-browser wait --text "<same text>"
-agent-browser screenshot .proof/<subject>-phone.png
+agent-browser screenshot "$P/<subject>-phone.png"
 ```
+
+If Chrome exits with `No usable sandbox!`, the host blocks unprivileged user namespaces (Ubuntu 23.10 and later). Point agent-browser at the system Chrome, which ships an AppArmor profile, with `export AGENT_BROWSER_EXECUTABLE_PATH=/opt/google/chrome/chrome`. Do not pass `--no-sandbox`.
 
 Capture every changed screen at both widths. Add `--full` to `screenshot` when the change sits below the fold.
 
@@ -35,13 +38,13 @@ Record when the change involves interaction, such as a click, a state change, or
 ```sh
 agent-browser set viewport 1440 900
 agent-browser open <url>
-agent-browser record start .proof/<subject>-<action>.webm --cursor
+agent-browser record start "$P/<subject>-<action>.webm" --cursor
 # drive the interaction with snapshot, click, fill, and wait
 agent-browser record stop
 agent-browser close
 ```
 
-Open each PNG with the `Read` tool before you attach it. Throw away any capture that shows a spinner, an error page, a blank frame, or a page other than the one you meant.
+Open each PNG with the `Read` tool before you attach it. For a recording, pull one frame with `ffmpeg -ss 3 -i <file> -frames:v 1 /tmp/frame.png` and open that. Throw away any capture that shows a spinner, an error page, a blank frame, or a page other than the one you meant.
 
 TODO: once the gallery runs, the next thread creates the `verify-inlay` skill with `create-verification-skill`. After that, launch and drive the app with `verify-inlay` and use this skill only for the capture and attach steps.
 
