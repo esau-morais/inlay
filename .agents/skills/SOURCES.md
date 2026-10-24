@@ -34,9 +34,7 @@ The pstack copy also brings two files outside `skills/`:
 | `correct` | Turns repeated review corrections into lint rules, types, or tests, and keeps the rule table in `AGENTS.md`. | Nothing. | None. |
 | `show-me-your-work` | A TSV decision log for unattended runs. Claude builds and Esaú reviews later, so the log is the review trail. | The closing audit spawns a reviewer on a different model family. Claude Code only offers Claude models, so the audit runs on a different Claude model and says so. | None. |
 | `sharpen` | Rewrites a task prompt to be deeper before Esaú hands it to the next thread. Runs only when typed. | Nothing. | None. |
-| `create-verification-skill` | **Temporary.** Generates Inlay's `verify-inlay` skill once the gallery runs. Delete this folder after `verify-inlay` exists. | It writes `.cursor/skills/verify-<app>/`. | Write to `.agents/skills/verify-inlay/` instead. |
 | `maintain-verification-skill` | Keeps `verify-inlay` honest as the gallery and blocks change. | It looks for `.cursor/skills/verify-*/`. | Look in `.agents/skills/verify-*/`. |
-| `automate-me` | **Temporary.** Turns how Esaú and the agents work in this repo into Inlay's own process skills, starting with `attach-proof`. Delete this folder once those skills exist. | It uses Cursor's built-in `create-skill`, which Claude Code lacks. It cites `poteto-mode` as a shape example; read it [upstream](https://github.com/cursor/plugins/tree/main/pstack/skills/poteto-mode) instead. Its mining step reads Cursor transcripts. The adapter maps that to `~/.claude/projects/<slug>/`. | Write output skills to `.agents/skills/<name>/`, not `.cursor/skills/`. |
 
 The principle skills below are short rules that the skills above cite by name. Only the ones that a vendored skill cites, or that match Inlay's v0 work, are here.
 
@@ -55,7 +53,7 @@ The principle skills below are short rules that the skills above cite by name. O
 
 Left out, with the reason:
 
-- `poteto-mode` and `poteto-help`. They are poteto's personal router, they pull in most of pstack, and many playbooks need Cursor-only tools (Bugbot, `deslop`, `control-ui`, Grok models). `automate-me` replaces them with an Inlay-specific mode.
+- `poteto-mode` and `poteto-help`. They are poteto's personal router, they pull in most of pstack, and many playbooks need Cursor-only tools (Bugbot, `deslop`, `control-ui`, Grok models). Inlay's own skills, listed at the end of this file, cover the parts this repo needs.
 - `architect`, `arena`, `swarm`, `interrogate`, `how`, `why`, `teach`, `figure-it-out`. They are built around multi-model panels. In Claude Code every panel runs on Claude, so the cross-model check that justifies them is gone. Revisit when a design is contested.
 - `statechart`, `create-formal-verification-skill`, `maintain-formal-verification-skill`. They are built around TLA+ models. No v0 block has state complex enough to need them.
 - `make-bot-ui` needs Grok Bot webhooks. `setup-pstack` only writes model role lines for poteto-mode. `ketchup`, `ketchup-video`, `recall`, `bro`, `in-your-own-words`, `blast-radius`, and `benchmark-checklist` do not match v0 work.
@@ -98,4 +96,5 @@ These skills are written for this repo and have no upstream. Edit them freely th
 
 | Skill | Why it is here |
 | --- | --- |
-| `attach-proof` | Captures screenshots and recordings with `agent-browser` and attaches them to a PR through `scripts/attach-proof.ts`. Drafted with `automate-me` from the setup brief, since this workspace had no earlier transcripts to mine. |
+| `attach-proof` | Captures screenshots and recordings with `agent-browser` and attaches them to a PR through `scripts/attach-proof.ts`. Drafted from the setup brief with pstack's `automate-me`, which was removed once the repo had its own skills. |
+| `verify-inlay` | Launches the gallery, drives each block with `agent-browser`, and names the end state that proves each feature. Generated with pstack's `create-verification-skill`, which was removed after this skill passed its first run. |

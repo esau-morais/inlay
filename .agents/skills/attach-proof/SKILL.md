@@ -46,7 +46,7 @@ agent-browser close
 
 Open each PNG with the `Read` tool before you attach it. For a recording, pull one frame with `ffmpeg -ss 3 -i <file> -frames:v 1 /tmp/frame.png` and open that. Throw away any capture that shows a spinner, an error page, a blank frame, or a page other than the one you meant.
 
-TODO: once the gallery runs, the next thread creates the `verify-inlay` skill with `create-verification-skill`. After that, launch and drive the app with `verify-inlay` and use this skill only for the capture and attach steps.
+Launch the gallery and drive it with the `verify-inlay` skill. Its feature files name what each capture must show. Use this skill for the capture and attach steps.
 
 ## 2. Attach
 
